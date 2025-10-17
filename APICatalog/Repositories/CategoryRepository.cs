@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APICatalog.Repositories
 {
-    public class CategoryRepository : ICategoryRepository
+    public class CategoryRepository(CatalogDBContext context) : ICategoryRepository
     {
-        private readonly CatalogDBContext _context;
-
-        public CategoryRepository(CatalogDBContext context)
-        {
-            _context = context;
-        }
+        private readonly CatalogDBContext _context = context;
 
         public async Task<Category> AddCategory(Category category)
         {
@@ -33,22 +28,23 @@ namespace APICatalog.Repositories
 
         public async Task<List<Category>> GetAllCategories()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories
+                .Include(c => c.Products)
+                .ToListAsync();
         }
 
         public async Task<Category> GetById(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == id);
-            return category == null ? throw new ArgumentException(message: $"Categoria com Id: {id} não foi encontrada") : category;
+            var category = await _context.Categories
+                .Include(c => c.Products)
+                .FirstOrDefaultAsync(c => c.CategoryId == id);
+
+            return category ?? throw new ArgumentException(message: $"Categoria com Id: {id} não foi encontrada");
         }
 
         public async Task<Category> UpdateCategory(Category category)
         {
-            var cat = await GetById(category.CategoryId);
-            if (cat == null)
-            {
-                throw new ArgumentException(message: $"Categoria com Id: {category.CategoryId} não foi encontrada");
-            }
+            var cat = await GetById(category.CategoryId) ?? throw new ArgumentException(message: $"Categoria com Id: {category.CategoryId} não foi encontrada");
             // Atualiza os valores da categoria
             _context.Entry(cat).CurrentValues.SetValues(category);
             _context.Categories.Update(cat);

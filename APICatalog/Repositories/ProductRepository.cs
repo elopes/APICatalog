@@ -5,15 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APICatalog.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository(CatalogDBContext context) : IProductRepository
     {
 
-        private readonly CatalogDBContext _dbContext;
-
-        public ProductRepository(CatalogDBContext context)
-        {
-            _dbContext = context;
-        }
+        private readonly CatalogDBContext _dbContext = context;
 
         public async Task<Product> AddProduct(Product product)
         {
@@ -25,22 +20,22 @@ namespace APICatalog.Repositories
 
         public async Task<List<Product>> GetAllProducts()
         {
-            return await _dbContext.Products.ToListAsync();
+            return await _dbContext.Products
+                .Include(p => p.Category)
+                .ToListAsync();
         }
 
         public async Task<Product> GetById(int id)
         {
-            return await _dbContext.Products.FirstOrDefaultAsync(p => p.ProductId == id)
+            return await _dbContext.Products
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.ProductId == id)
                    ?? throw new ArgumentException(message: $"Produto com Id: {id} não foi encontrado");
         }
 
         public async Task<Product> UpdateProduct(Product product)
         {
-            Product? prod = await GetById(product.ProductId);
-            if (prod == null)
-            {
-                throw new ArgumentException(message: $"Usuário para o Id: {product.ProductId} não foi encontrado");
-            }
+            Product? prod = await GetById(product.ProductId) ?? throw new ArgumentException(message: $"Usuário para o Id: {product.ProductId} não foi encontrado");
 
             // Atualiza os valores do produto
             _dbContext.Entry(prod).CurrentValues.SetValues(product);

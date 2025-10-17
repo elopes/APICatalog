@@ -1,0 +1,50 @@
+@model APICatalog.Models.Product
+@{
+    ViewData["Title"] = "Create";
+}
+<h1>Create</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-2">
+                <label asp-for="Name" class="control-label" for="Name" id="Name-label"></label>
+                <input asp-for="Name" class="form-control" id="Name" aria-labelledby="Name-label" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Description" class="control-label" for="Description" id="Description-label"></label>
+                <input asp-for="Description" class="form-control" id="Description" aria-labelledby="Description-label" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">  
+                <label asp-for="Price" class="control-label" for="Price" id="Price-label"></label>
+                <input asp-for="Price" class="form-control" id="Price" aria-labelledby="Price-label" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Stock" class="control-label" for="Stock" id="Stock-label"></label>
+                <input asp-for="Stock" class="form-control" id="Stock" aria-labelledby="Stock-label" />
+                <span asp-validation-for="Stock" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="CategoryId" class="control-label" for="CategoryId" id="CategoryId-label"></label>
+                <input asp-for="CategoryId" class="form-control" id="CategoryId" aria-labelledby="CategoryId-label" />
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="ImageUrl" class="control-label" for="ImageUrl" id="ImageUrl-label"></label>
+                <input asp-for="ImageUrl" class="form-control" id="ImageUrl" aria-labelledby="ImageUrl-label" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
